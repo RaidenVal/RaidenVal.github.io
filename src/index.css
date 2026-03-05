@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+
+  --color-bg-primary: #1C1917;
+  --color-bg-secondary: #292524;
+  --color-text-primary: #F5F0EB;
+  --color-text-muted: #A8A29E;
+  --color-accent: #C9A96E;
+  --color-border: #3A3330;
+}
+
+body {
+  background-color: #1C1917;
+  color: #F5F0EB;
+  font-family: "DM Sans", system-ui, sans-serif;
+}
