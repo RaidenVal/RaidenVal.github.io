@@ -17,3 +17,7 @@ body {
   color: #F5F0EB;
   font-family: "DM Sans", system-ui, sans-serif;
 }
+
+html {
+  scroll-behavior: smooth;
+}
