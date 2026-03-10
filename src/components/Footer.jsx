@@ -7,20 +7,12 @@ function Footer() {
         </p>
         <div className="flex gap-6">
           <a
-            href="https://www.instagram.com"
+            href="https://www.instagram.com/jli_works"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-(--color-text-muted) hover:text-(--color-accent) transition-colors"
           >
             Instagram
-          </a>
-          <a
-            href="https://www.behance.net"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-(--color-text-muted) hover:text-(--color-accent) transition-colors"
-          >
-            Behance
           </a>
         </div>
       </div>
