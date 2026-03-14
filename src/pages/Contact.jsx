@@ -42,8 +42,8 @@ function Contact() {
         Get in Touch
       </h1>
       <p className="text-(--color-text-muted) text-lg max-w-md leading-relaxed mb-24">
-        Available for freelance projects and collaborations.
-        Feel free to reach out.
+        Whether you're interested in James's work or just want to say hello,
+        feel free to reach out.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -129,16 +129,22 @@ function Contact() {
             <p className="text-xs tracking-widest uppercase text-(--color-text-muted) mb-3">
               Based in
             </p>
-            <p className="text-(--color-text-primary)">Kent, UK</p>
+            <p className="text-(--color-text-primary)">Sittingbourne, Kent</p>
           </div>
           <div>
             <p className="text-xs tracking-widest uppercase text-(--color-text-muted) mb-3">
-              Availability
+              Instagram
             </p>
-            <p className="text-(--color-text-primary)">Open to work</p>
+            <a
+              href="https://instagram.com/jli_works"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-(--color-text-primary) hover:text-(--color-accent) transition-colors"
+            >
+              @jli_works
+            </a>
           </div>
         </div>
-
       </div>
     </div>
   )
