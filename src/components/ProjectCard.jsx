@@ -1,6 +1,14 @@
-function ProjectCard({ project }) {
+import { motion } from 'framer-motion'
+
+function ProjectCard({ project, index }) {
   return (
-    <div className="group cursor-pointer">
+    <motion.div
+      className="group cursor-pointer"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: index * 0.1, ease: 'easeOut' }}
+    >
       <div className="overflow-hidden mb-4">
         <img
           src={project.image}
@@ -21,7 +29,7 @@ function ProjectCard({ project }) {
           {project.category}
         </span>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
