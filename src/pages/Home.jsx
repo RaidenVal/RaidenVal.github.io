@@ -35,7 +35,7 @@ function Home() {
 
       {/* Work Grid */}
       <section id="work" className="px-8 md:px-16 py-24">
-        <div className="flex items-center justify-between mb-16">
+        <div className="flex flex-col gap-6 mb-16 md:flex-row md:items-center md:justify-between">
           <h2 className="font-(family-name:--font-display) text-3xl text-(--color-text-primary)">
             Selected Work
           </h2>
