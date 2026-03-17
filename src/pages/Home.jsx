@@ -57,8 +57,8 @@ function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          {filtered.map(project => (
-            <ProjectCard key={project.id} project={project} />
+          {filtered.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
       </section>
