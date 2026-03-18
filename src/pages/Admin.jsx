@@ -9,6 +9,8 @@ function Admin() {
   const [uploading, setUploading] = useState(false)
   const [uploadResult, setUploadResult] = useState(null)
   const [uploadError, setUploadError] = useState('')
+  const [generatingDesc, setGeneratingDesc] = useState(false)
+  const [generatedDesc, setGeneratedDesc] = useState(null)
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -86,6 +88,32 @@ function Admin() {
       } finally {
         setUploading(false)
       }
+    }
+  }
+
+  const handleGenerateDescription = async () => {
+    if (!uploadResult) return
+    setGeneratingDesc(true)
+    setGeneratedDesc(null)
+
+    try {
+      const res = await fetch('/api/ai/describe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ imageUrl: uploadResult.url }),
+      })
+
+      const data = await res.json()
+      if (res.ok) {
+        setGeneratedDesc(data.description)
+      }
+    } catch {
+      console.error('Failed to generate description')
+    } finally {
+      setGeneratingDesc(false)
     }
   }
 
@@ -168,12 +196,34 @@ function Admin() {
               <p className="text-xs text-(--color-text-muted) break-all">
                 URL: {uploadResult.url}
               </p>
-              <button
-                onClick={() => navigator.clipboard.writeText(uploadResult.url)}
-                className="self-start text-xs tracking-widest uppercase text-(--color-accent) border-b border-(--color-accent) pb-0.5 hover:opacity-70 transition-opacity"
-              >
-                Copy URL
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => navigator.clipboard.writeText(uploadResult.url)}
+                  className="self-start text-xs tracking-widest uppercase text-(--color-accent) border-b border-(--color-accent) pb-0.5 hover:opacity-70 transition-opacity"
+                >
+                  Copy URL
+                </button>
+                <button
+                  onClick={handleGenerateDescription}
+                  disabled={generatingDesc}
+                  className="self-start text-xs tracking-widest uppercase text-(--color-text-muted) border-b border-(--color-border) pb-0.5 hover:text-(--color-text-primary) transition-colors disabled:opacity-40"
+                >
+                  {generatingDesc ? 'Generating...' : 'Generate Description'}
+                </button>
+              </div>
+              {generatedDesc && (
+                <div className="border border-(--color-border) p-4 mt-2">
+                  <p className="text-sm text-(--color-text-primary) leading-relaxed mb-3">
+                    {generatedDesc}
+                  </p>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(generatedDesc)}
+                    className="text-xs tracking-widest uppercase text-(--color-accent) border-b border-(--color-accent) pb-0.5 hover:opacity-70 transition-opacity"
+                  >
+                    Copy Description
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
