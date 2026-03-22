@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 function Admin() {
-  const [token, setToken] = useState(null)
+  const [token, setToken] = useState(() => sessionStorage.getItem('adminToken'))
   const [password, setPassword] = useState('')
   const [submissions, setSubmissions] = useState([])
   const [loginError, setLoginError] = useState('')
