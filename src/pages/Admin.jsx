@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 function Admin() {
   const [token, setToken] = useState(null)
@@ -11,6 +12,7 @@ function Admin() {
   const [uploadError, setUploadError] = useState('')
   const [generatingDesc, setGeneratingDesc] = useState(false)
   const [generatedDesc, setGeneratedDesc] = useState(null)
+  const [projects, setProjects] = useState([])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -51,6 +53,13 @@ function Admin() {
     }
 
     fetchSubmissions()
+
+    const fetchProjects = async () => {
+      const res = await fetch('/api/projects')
+      const data = await res.json()
+      if (res.ok) setProjects(data.projects)
+    }
+    fetchProjects()
   }, [token])
 
   const handleUpload = async (e) => {
@@ -228,6 +237,36 @@ function Admin() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Projects */}
+      <div className="mb-16">
+        <h2 className="text-sm tracking-widest uppercase text-(--color-text-muted) mb-6">
+          Projects
+        </h2>
+        {projects.length === 0 ? (
+          <p className="text-(--color-text-muted)">No projects found.</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {projects.map((p) => (
+              <Link
+                key={p.id}
+                to={`/projects/${p.id}`}
+                className="flex items-center justify-between border border-(--color-border) px-6 py-4 hover:border-(--color-accent) transition-colors group"
+              >
+                <div>
+                  <p className="text-(--color-text-primary) group-hover:text-(--color-accent) transition-colors">
+                    {p.title}
+                  </p>
+                  <p className="text-xs text-(--color-text-muted) mt-0.5">{p.category}</p>
+                </div>
+                <span className="text-xs tracking-widest uppercase text-(--color-text-muted) group-hover:text-(--color-accent) transition-colors">
+                  Edit →
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Submissions */}
