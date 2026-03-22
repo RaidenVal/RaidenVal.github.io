@@ -168,9 +168,11 @@ function ProjectDetail() {
           transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
           className="flex flex-col gap-6"
         >
-          <span className="text-xs tracking-widest uppercase text-(--color-accent)">
-            {project.category}
-          </span>
+          {!editing && (
+            <span className="text-xs tracking-widest uppercase text-(--color-accent)">
+              {project.category}
+            </span>
+          )}
 
           {editing ? (
             <>
