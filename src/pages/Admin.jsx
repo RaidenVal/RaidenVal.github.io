@@ -8,10 +8,7 @@ function Admin() {
   const [loginError, setLoginError] = useState('')
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
-  const [uploadResult, setUploadResult] = useState(null)
   const [uploadError, setUploadError] = useState('')
-  const [generatingDesc, setGeneratingDesc] = useState(false)
-  const [generatedDesc, setGeneratedDesc] = useState(null)
   const [projects, setProjects] = useState([])
 
   const handleLogin = async (e) => {
@@ -53,28 +50,27 @@ function Admin() {
     }
 
     fetchSubmissions()
-
-    const fetchProjects = async () => {
-      const res = await fetch('/api/projects')
-      const data = await res.json()
-      if (res.ok) setProjects(data.projects)
-    }
     fetchProjects()
   }, [token])
+
+  const fetchProjects = async () => {
+    const res = await fetch('/api/projects')
+    const data = await res.json()
+    if (res.ok) setProjects(data.projects)
+  }
 
   const handleUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
 
     setUploading(true)
-    setUploadResult(null)
     setUploadError('')
 
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = async () => {
       try {
-        const res = await fetch('/api/upload', {
+        const uploadRes = await fetch('/api/upload', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -86,44 +82,31 @@ function Admin() {
           }),
         })
 
-        const data = await res.json()
+        const uploadData = await uploadRes.json()
 
-        if (res.ok) {
-          setUploadResult(data)
-        } else {
-          setUploadError(data.error)
+        if (!uploadRes.ok) {
+          setUploadError(uploadData.error)
+          return
+        }
+
+        const createRes = await fetch('/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ image: uploadData.url }),
+        })
+
+        if (createRes.ok) {
+          await fetchProjects()
+          e.target.value = ''
         }
       } catch {
         setUploadError('Upload failed')
       } finally {
         setUploading(false)
       }
-    }
-  }
-
-  const handleGenerateDescription = async () => {
-    if (!uploadResult) return
-    setGeneratingDesc(true)
-    setGeneratedDesc(null)
-
-    try {
-      const res = await fetch('/api/ai/describe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ imageUrl: uploadResult.url }),
-      })
-
-      const data = await res.json()
-      if (res.ok) {
-        setGeneratedDesc(data.description)
-      }
-    } catch {
-      console.error('Failed to generate description')
-    } finally {
-      setGeneratingDesc(false)
     }
   }
 
@@ -177,12 +160,43 @@ function Admin() {
         </button>
       </div>
 
-      {/* Image Upload */}
+      {/* Projects */}
       <div className="mb-16">
         <h2 className="text-sm tracking-widest uppercase text-(--color-text-muted) mb-6">
-          Upload Image
+          Projects
         </h2>
-        <div className="border border-(--color-border) p-6">
+        <div className="flex flex-col gap-3 mb-6">
+          {projects.map((p) => (
+            <Link
+              key={p.id}
+              to={`/projects/${p.id}`}
+              className="flex items-center gap-4 border border-(--color-border) px-6 py-4 hover:border-(--color-accent) transition-colors group"
+            >
+              {p.image && (
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  className="w-12 h-12 object-cover shrink-0"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-(--color-text-primary) group-hover:text-(--color-accent) transition-colors">
+                  {p.title}
+                </p>
+                <p className="text-xs text-(--color-text-muted) mt-0.5">{p.category}</p>
+              </div>
+              <span className="text-xs tracking-widest uppercase text-(--color-text-muted) group-hover:text-(--color-accent) transition-colors shrink-0">
+                Edit →
+              </span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Upload new image to create a project */}
+        <div className="border border-dashed border-(--color-border) p-6">
+          <p className="text-xs tracking-widest uppercase text-(--color-text-muted) mb-4">
+            Upload image to add a project
+          </p>
           <input
             type="file"
             accept="image/*"
@@ -196,77 +210,7 @@ function Admin() {
           {uploadError && (
             <p className="text-sm text-red-400 mt-4">{uploadError}</p>
           )}
-          {uploadResult && (
-            <div className="mt-4 flex flex-col gap-3">
-              <img
-                src={uploadResult.url}
-                alt="Uploaded"
-                className="w-32 h-32 object-cover"
-              />
-              <p className="text-xs text-(--color-text-muted) break-all">
-                URL: {uploadResult.url}
-              </p>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => navigator.clipboard.writeText(uploadResult.url)}
-                  className="self-start text-xs tracking-widest uppercase text-(--color-accent) border-b border-(--color-accent) pb-0.5 hover:opacity-70 transition-opacity"
-                >
-                  Copy URL
-                </button>
-                <button
-                  onClick={handleGenerateDescription}
-                  disabled={generatingDesc}
-                  className="self-start text-xs tracking-widest uppercase text-(--color-text-muted) border-b border-(--color-border) pb-0.5 hover:text-(--color-text-primary) transition-colors disabled:opacity-40"
-                >
-                  {generatingDesc ? 'Generating...' : 'Generate Description'}
-                </button>
-              </div>
-              {generatedDesc && (
-                <div className="border border-(--color-border) p-4 mt-2">
-                  <p className="text-sm text-(--color-text-primary) leading-relaxed mb-3">
-                    {generatedDesc}
-                  </p>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(generatedDesc)}
-                    className="text-xs tracking-widest uppercase text-(--color-accent) border-b border-(--color-accent) pb-0.5 hover:opacity-70 transition-opacity"
-                  >
-                    Copy Description
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
-      </div>
-
-      {/* Projects */}
-      <div className="mb-16">
-        <h2 className="text-sm tracking-widest uppercase text-(--color-text-muted) mb-6">
-          Projects
-        </h2>
-        {projects.length === 0 ? (
-          <p className="text-(--color-text-muted)">No projects found.</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {projects.map((p) => (
-              <Link
-                key={p.id}
-                to={`/projects/${p.id}`}
-                className="flex items-center justify-between border border-(--color-border) px-6 py-4 hover:border-(--color-accent) transition-colors group"
-              >
-                <div>
-                  <p className="text-(--color-text-primary) group-hover:text-(--color-accent) transition-colors">
-                    {p.title}
-                  </p>
-                  <p className="text-xs text-(--color-text-muted) mt-0.5">{p.category}</p>
-                </div>
-                <span className="text-xs tracking-widest uppercase text-(--color-text-muted) group-hover:text-(--color-accent) transition-colors">
-                  Edit →
-                </span>
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Submissions */}
