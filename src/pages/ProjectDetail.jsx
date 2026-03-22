@@ -136,12 +136,12 @@ function ProjectDetail() {
   return (
     <div className="px-8 md:px-16 py-24">
       {/* Back link */}
-      <Link
-        to="/"
-        className="inline-block text-xs tracking-widest uppercase text-(--color-text-muted) hover:text-(--color-text-primary) transition-colors mb-16"
+      <button
+        onClick={() => navigate(-1)}
+        className="text-xs tracking-widest uppercase text-(--color-text-muted) hover:text-(--color-text-primary) transition-colors mb-16"
       >
         ← Back
-      </Link>
+      </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
         {/* Image */}
