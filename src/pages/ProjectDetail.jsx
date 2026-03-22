@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 
 function ProjectDetail() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [project, setProject] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
@@ -17,6 +18,7 @@ function ProjectDetail() {
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [generating, setGenerating] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     async function fetchProject() {
@@ -83,6 +85,22 @@ function ProjectDetail() {
       setSaveError('Save failed')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!window.confirm(`Delete "${project.title}"? This cannot be undone.`)) return
+    setDeleting(true)
+    try {
+      const res = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      if (res.ok) navigate('/')
+    } catch {
+      // ignore — user stays on page
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -201,12 +219,21 @@ function ProjectDetail() {
                 </p>
               )}
               {isAdmin && (
-                <button
-                  onClick={() => setEditing(true)}
-                  className="self-start text-xs tracking-widest uppercase text-(--color-text-muted) border-b border-(--color-border) pb-0.5 hover:text-(--color-text-primary) transition-colors"
-                >
-                  Edit
-                </button>
+                <div className="flex gap-6">
+                  <button
+                    onClick={() => setEditing(true)}
+                    className="text-xs tracking-widest uppercase text-(--color-text-muted) border-b border-(--color-border) pb-0.5 hover:text-(--color-text-primary) transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="text-xs tracking-widest uppercase text-red-400 border-b border-red-400/40 pb-0.5 hover:opacity-70 transition-opacity disabled:opacity-40"
+                  >
+                    {deleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
               )}
             </>
           )}

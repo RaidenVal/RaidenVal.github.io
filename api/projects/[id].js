@@ -61,5 +61,23 @@ export default async function handler(req, res) {
     return res.status(200).json({ project: data })
   }
 
+  if (req.method === 'DELETE') {
+    const payload = verifyToken(req)
+    if (!payload) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to delete project' })
+    }
+
+    return res.status(200).json({ success: true })
+  }
+
   return res.status(405).json({ error: 'Method not allowed' })
 }
