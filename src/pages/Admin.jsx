@@ -163,7 +163,7 @@ function Admin() {
       {/* Projects */}
       <div className="mb-16">
         <h2 className="text-sm tracking-widest uppercase text-(--color-text-muted) mb-6">
-          Projects
+          Works
         </h2>
         <div className="flex flex-col gap-3 mb-6">
           {projects.map((p) => (
@@ -195,7 +195,7 @@ function Admin() {
         {/* Upload new image to create a project */}
         <div className="border border-dashed border-(--color-border) p-6">
           <p className="text-xs tracking-widest uppercase text-(--color-text-muted) mb-4">
-            Upload image to add a project
+            Upload image to add a work
           </p>
           <input
             type="file"

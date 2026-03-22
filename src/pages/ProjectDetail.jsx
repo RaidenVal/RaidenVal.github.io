@@ -15,6 +15,7 @@ function ProjectDetail() {
   const [editing, setEditing] = useState(false)
   const [editTitle, setEditTitle] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [editCategory, setEditCategory] = useState('')
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [generating, setGenerating] = useState(false)
@@ -32,6 +33,7 @@ function ProjectDetail() {
         setProject(data.project)
         setEditTitle(data.project.title)
         setEditDescription(data.project.description ?? '')
+        setEditCategory(data.project.category)
       } catch {
         setNotFound(true)
       } finally {
@@ -72,7 +74,7 @@ function ProjectDetail() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${adminToken}`,
         },
-        body: JSON.stringify({ title: editTitle, description: editDescription }),
+        body: JSON.stringify({ title: editTitle, description: editDescription, category: editCategory }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -107,6 +109,7 @@ function ProjectDetail() {
   const handleCancelEdit = () => {
     setEditTitle(project.title)
     setEditDescription(project.description ?? '')
+    setEditCategory(project.category)
     setSaveError('')
     setEditing(false)
   }
@@ -122,7 +125,7 @@ function ProjectDetail() {
   if (notFound) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-6">
-        <p className="text-(--color-text-muted)">Project not found.</p>
+        <p className="text-(--color-text-muted)">Work not found.</p>
         <Link
           to="/"
           className="text-sm tracking-widest uppercase text-(--color-accent) border-b border-(--color-accent) pb-1 hover:opacity-70 transition-opacity"
@@ -176,6 +179,22 @@ function ProjectDetail() {
                 onChange={(e) => setEditTitle(e.target.value)}
                 className="font-(family-name:--font-display) text-3xl md:text-4xl text-(--color-text-primary) bg-transparent border-b border-(--color-border) focus:outline-none focus:border-(--color-accent) transition-colors pb-1"
               />
+              <div className="flex gap-4">
+                {['Professional', 'Illustration'].map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setEditCategory(cat)}
+                    className={`text-xs tracking-widest uppercase transition-colors ${
+                      editCategory === cat
+                        ? 'text-(--color-accent)'
+                        : 'text-(--color-text-muted) hover:text-(--color-text-primary)'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
               <div className="flex flex-col gap-2">
                 <textarea
                   value={editDescription}
