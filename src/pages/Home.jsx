@@ -1,11 +1,25 @@
-import { useState } from 'react'
-import { projects } from '../data/projects'
+import { useState, useEffect } from 'react'
 import ProjectCard from '../components/ProjectCard'
 
 const categories = ['All', 'Professional', 'Illustration']
 
 function Home() {
   const [active, setActive] = useState('All')
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchProjects() {
+      try {
+        const res = await fetch('/api/projects')
+        const data = await res.json()
+        if (res.ok) setProjects(data.projects)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProjects()
+  }, [])
 
   const filtered = active === 'All'
     ? projects
@@ -56,11 +70,15 @@ function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          {filtered.map((project, index) => (
-            <ProjectCard key={project.id} project={project} index={index} />
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-sm tracking-widest uppercase text-(--color-text-muted)">Loading...</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+            {filtered.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )

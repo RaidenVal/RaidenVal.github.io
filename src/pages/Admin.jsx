@@ -27,6 +27,7 @@ function Admin() {
       const data = await res.json()
 
       if (res.ok) {
+        sessionStorage.setItem('adminToken', data.token)
         setToken(data.token)
       } else {
         setLoginError(data.error)
@@ -160,7 +161,7 @@ function Admin() {
           Admin
         </h1>
         <button
-          onClick={() => setToken(null)}
+          onClick={() => { sessionStorage.removeItem('adminToken'); setToken(null) }}
           className="text-sm tracking-widest uppercase text-(--color-text-muted) hover:text-(--color-text-primary) transition-colors"
         >
           Sign Out
