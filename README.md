@@ -1,5 +1,9 @@
 # RaidenVal.github.io
 
+**🔗 Live site: https://raiden-val-github-io.vercel.app**
+
+> Note: the live URL uses **hyphens** (`-`), not the dots in the repo name. Typing the dotted form (`raiden-val.github.io...`) will not load.
+
 Personal portfolio site built with React, Vite, Tailwind CSS, and React Router. Deployed on Vercel.
 
 ## Run locally
